@@ -126,7 +126,7 @@ void CreateBullet(std::list<Entity*>& entities,Entity* player){
 	entity->addComponent(new Drawable(fb->bulletImage));
 	entity->addComponent(new Position(p->x,p->y));
 	entity->addComponent(new Velocity(0,-1000));
-	entity->addComponent(new CollisionDamage("bulletdamage",1,0));
+	entity->addComponent(new GivesCollisionDamage("bulletdamage",1));
 	entity->addComponent(new Collidable(50));
 
 
@@ -163,41 +163,43 @@ void CollisionDamageSystem(std::list<Entity*>& entities, sf::RenderWindow& windo
 	for(Entity* e: entities)
     {
 		Collidable* c =(Collidable*)e->getComponent("collidable");
+		Health* h =(Health*)e->getComponent("health");
+		
 
 		//Position* p =(Position*)e->getComponent("position");
-		if(c!=NULL && c->collideable==true){
+		if(c!=NULL && h!=NULL){
 			
 			for(Entity* other: c->collidingWith)
 			{
 				if(e==other) continue; //can't damage oneself
 
-				Health* h =(Health*)e->getComponent("health");
 
-				Collidable* otherc =(Collidable*)other->getComponent("collidable");
+				ReceivesCollisionDamage* rcd=(ReceivesCollisionDamage*)e->getComponent("rockdamage");
+				GivesCollisionDamage* gcd=(GivesCollisionDamage*)other->getComponent("rockdamage");
 
-				//check for rock damage
-				CollisionDamage* otherrd =(CollisionDamage*)other->getComponent("rockdamage");
-				CollisionDamage* erd =(CollisionDamage*)e->getComponent("rockdamage");
-
-				if(erd!=NULL && otherrd!=NULL && h!=NULL){
-					if(erd->receives>0 && otherrd->gives>0){
-						//h->health=0;
+				if(rcd!=NULL && gcd!=NULL){
+					
+						h->health-=gcd->damage;
 						Invulnerable* inv =(Invulnerable*)e->getComponent("Invulnerable");
 						if(inv)
 							inv->reset=true;
 
-					}
+					
 
 				}
 
 				//check for bullet damage
-				CollisionDamage* otherbd =(CollisionDamage*)other->getComponent("bulletdamage");
-				CollisionDamage* ebd =(CollisionDamage*)e->getComponent("bulletdamage");
+				rcd=(ReceivesCollisionDamage*)e->getComponent("bulletdamage");
+				gcd=(GivesCollisionDamage*)other->getComponent("bulletdamage");
 
-				if(ebd!=NULL && otherbd!=NULL && h!=NULL){
- 					if(ebd->receives>0 && otherbd->gives>0){
-						h->health=0;
-					}
+				if(rcd!=NULL && gcd!=NULL){
+					
+						h->health-=gcd->damage;
+						Invulnerable* inv =(Invulnerable*)e->getComponent("Invulnerable");
+						if(inv)
+							inv->reset=true;
+
+					
 
 				}
 

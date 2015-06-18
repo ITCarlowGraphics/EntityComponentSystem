@@ -53,12 +53,19 @@ public:
 };
 
 
-class CollisionDamage : public Component
+class GivesCollisionDamage : public Component
 {
 public:
-	CollisionDamage(std::string s,float g,float r){name=s;gives=g;receives=r;};
-	float gives;
-	float receives;
+	GivesCollisionDamage(std::string n,float d){name=n;damage=d;};
+
+	float damage;
+
+};
+
+class ReceivesCollisionDamage : public Component
+{
+public:
+	ReceivesCollisionDamage(std::string n){name=n;};
 
 };
 

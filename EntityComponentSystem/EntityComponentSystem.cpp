@@ -59,22 +59,23 @@ int main()
 	player->addComponent(new Gun(textureBullet,0.25));
 	player->addComponent(new Collidable(textureShip.getSize().x/2));
 	player->addComponent(new Health(1));
-	player->addComponent(new CollisionDamage("rockdamage",0,1));	
+	player->addComponent(new ReceivesCollisionDamage("rockdamage"));	
 	player->addComponent(new Invulnerable(1));
 
 
 	//add a few rocks
 	Entity* rock;
-	for(int i=0;i<5;i++){
+	for(int i=0;i<15;i++){
 		rock=new Entity;
 		entities.push_back(rock);
 
 		rock->addComponent(new Drawable(textureRock));
-		rock->addComponent(new Position(rand()%window.getSize().x,(int)(rand()%window.getSize().y)-(int)(window.getSize().y)));
+		int h=window.getSize().y;
+		rock->addComponent(new Position(rand()%window.getSize().x,rand()%h));
 		rock->addComponent(new Velocity(0,rand()%100));
 		rock->addComponent(new Collidable(60));
-		rock->addComponent(new CollisionDamage("rockdamage",1,0));
-		rock->addComponent(new CollisionDamage("bulletdamage",1,1));
+		rock->addComponent(new GivesCollisionDamage("rockdamage",1));
+		rock->addComponent(new ReceivesCollisionDamage("bulletdamge"));
 		rock->addComponent(new Health(1));
 	}
 
@@ -94,7 +95,7 @@ int main()
 		GunCooldown(entities,window,time.asSeconds());
 		CheckForCollisions(entities,window,time.asSeconds());
 		CollisionDamageSystem(entities,window,time.asSeconds());
-		RemoveDeadEntities(entities,window,time.asSeconds());
+		//RemoveDeadEntities(entities,window,time.asSeconds());
 		invulnerablity(entities,window,time.asSeconds());
 
 		
