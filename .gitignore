@@ -81,3 +81,5 @@ $RECYCLE.BIN/
 *.lastbuildstate
 *.log
 *.idb
+ipch/entitycomponentsystem-f3afd06/entitycomponentsystem-287d9201.ipch
+*.ipch

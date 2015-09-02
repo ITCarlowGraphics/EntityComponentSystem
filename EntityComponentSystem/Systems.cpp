@@ -126,8 +126,11 @@ void CreateBullet(std::list<Entity*>& entities,Entity* player){
 	entity->addComponent(new Drawable(fb->bulletImage));
 	entity->addComponent(new Position(p->x,p->y));
 	entity->addComponent(new Velocity(0,-1000));
-	entity->addComponent(new GivesCollisionDamage("bulletdamage",1));
+	entity->addComponent(new CollisionDamage("bulletdamage",1,true));
+	entity->addComponent(new CollisionDamage("rockdamage",0,true));
 	entity->addComponent(new Collidable(50));
+	entity->addComponent(new Health(1));
+
 
 
 
@@ -173,13 +176,13 @@ void CollisionDamageSystem(std::list<Entity*>& entities, sf::RenderWindow& windo
 			{
 				if(e==other) continue; //can't damage oneself
 
+				// check for rock damage
+				CollisionDamage* rcd=(CollisionDamage*)e->getComponent("rockdamage");
+				CollisionDamage* gcd=(CollisionDamage*)other->getComponent("rockdamage");
 
-				ReceivesCollisionDamage* rcd=(ReceivesCollisionDamage*)e->getComponent("rockdamage");
-				GivesCollisionDamage* gcd=(GivesCollisionDamage*)other->getComponent("rockdamage");
-
-				if(rcd!=NULL && gcd!=NULL){
+				if(rcd!=NULL && gcd!=NULL && rcd->receivesDamage){
 					
-						h->health-=gcd->damage;
+						h->health-=gcd->givesDamage;
 						Invulnerable* inv =(Invulnerable*)e->getComponent("Invulnerable");
 						if(inv)
 							inv->reset=true;
@@ -189,17 +192,12 @@ void CollisionDamageSystem(std::list<Entity*>& entities, sf::RenderWindow& windo
 				}
 
 				//check for bullet damage
-				rcd=(ReceivesCollisionDamage*)e->getComponent("bulletdamage");
-				gcd=(GivesCollisionDamage*)other->getComponent("bulletdamage");
+				rcd=(CollisionDamage*)e->getComponent("bulletdamage");
+				gcd=(CollisionDamage*)other->getComponent("bulletdamage");
 
-				if(rcd!=NULL && gcd!=NULL){
+ 				if(rcd!=NULL && gcd!=NULL &&   rcd->receivesDamage){
 					
-						h->health-=gcd->damage;
-						Invulnerable* inv =(Invulnerable*)e->getComponent("Invulnerable");
-						if(inv)
-							inv->reset=true;
-
-					
+						h->health-=gcd->givesDamage;
 
 				}
 
